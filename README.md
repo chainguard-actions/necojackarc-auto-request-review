@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v0.10.0 | [`v0.10.0`](https://github.com/chainguard-actions/necojackarc-auto-request-review/tree/v0.10.0) | [`5f91f42`](https://github.com/necojackarc/auto-request-review/commit/5f91f424cabb3211c669e49e79da8363f7df395b) |
 | v0.12.0 | [`v0.12.0`](https://github.com/chainguard-actions/necojackarc-auto-request-review/tree/v0.12.0) | [`6a51ceb`](https://github.com/necojackarc/auto-request-review/commit/6a51cebffe2c084705d9a7b394abd802e0119633) |
 
 ## Privacy
