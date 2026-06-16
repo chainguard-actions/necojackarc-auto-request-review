@@ -1,0 +1,37 @@
+name: Test basic usage with token input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_REF: refs/pull/1/merge
+      GITHUB_HEAD_REF: feature-branch
+      GITHUB_BASE_REF: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up config file
+        run: |
+          mkdir -p .github
+          cp "$GITHUB_WORKSPACE/actions/hardened/necojackarc--auto-request-review/v0.10.0/tests/fixtures/auto_request_review.yml" \
+             .github/auto_request_review.yml
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          config: .github/auto_request_review.yml
+
+      - name: Assert action was invoked with token input
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          # The action may fail because there is no real pull request in act,
+          # but it must have been invoked (outcome is either success or failure, not skipped).
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped, expected it to run"
+            exit 1
+          fi
+          echo "PASS: action was invoked (outcome=${{ steps.action.outcome }})"

@@ -1,0 +1,9 @@
+reviewers:
+  groups:
+    engineers:
+      - octocat
+
+files:
+  "**/*.js":
+    one_of:
+      - engineers
