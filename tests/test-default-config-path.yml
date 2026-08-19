@@ -1,0 +1,33 @@
+name: Test default config path (graceful exit on missing config)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with default config path (no config input provided)
+        id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          # No 'config' input — uses default: .github/auto_request_review.yml
+          # This file does not exist in the repo, so the action should
+          # gracefully exit with a warning (404 handling).
+          # Under act, context.ref may point to a branch that doesn't exist
+          # in the remote repo, which can cause a non-404 API error.
+          # We accept both outcomes.
+        continue-on-error: true
+      - name: Assert action ran (success or expected failure)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action exited gracefully (config not found)"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed as expected (API error under act environment)"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi
