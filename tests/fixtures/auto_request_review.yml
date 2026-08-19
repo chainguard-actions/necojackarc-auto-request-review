@@ -1,0 +1,11 @@
+reviewers:
+  groups:
+    engineers:
+      - engineer_a
+      - engineer_b
+  defaults:
+    - engineer_a
+options:
+  ignore_draft: true
+  ignored_keywords:
+    - DO NOT REVIEW

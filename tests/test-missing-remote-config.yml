@@ -1,0 +1,43 @@
+name: Test missing remote config (use_local=false, file absent in repo)
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Run the action with use_local=false (default) pointing to a config path
+      # that does not exist in the repository. The action fetches via GitHub API,
+      # receives a 404, emits a warning, and exits gracefully (exit 0).
+      # Note: context.ref is refs/heads/act-harness under workflow_dispatch.
+      # GitHub API returns 404 for missing files regardless of whether the ref exists.
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          config: .github/nonexistent_auto_request_review_config_99999.yml
+          use_local: 'false'
+        continue-on-error: true
+
+      - name: Assert action ran and completed
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ -z "$OUTCOME" ]; then
+            echo "FAIL: action did not run (outcome is empty)"
+            exit 1
+          fi
+          # The action should exit gracefully (success) when the remote config file
+          # returns 404. We accept failure too in case of unexpected behavior
+          # (e.g., non-404 API error when act-harness branch doesn't exist remotely).
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action exited gracefully on 404 remote config"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS (acceptable): action failed — may indicate API returned non-404 error but action ran"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

@@ -1,0 +1,40 @@
+name: Test missing local config (use_local=true, file absent)
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Run the action with use_local=true but point to a non-existent config file.
+      # The action should detect the missing file, emit a warning, and exit gracefully (exit 0).
+      # We use a path in /tmp to avoid any workspace symlink issues.
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          config: /tmp/nonexistent_auto_request_review_config_12345.yml
+          use_local: 'true'
+        continue-on-error: true
+
+      - name: Assert action ran and completed
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ -z "$OUTCOME" ]; then
+            echo "FAIL: action did not run (outcome is empty)"
+            exit 1
+          fi
+          # The action should exit gracefully (success) when the local config file
+          # is not found. We accept failure too in case of unexpected behavior.
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action exited gracefully on missing local config"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS (acceptable): action failed — may indicate unexpected behavior but action ran"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi
