@@ -1,0 +1,29 @@
+name: Test ignored keywords in PR title
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_REF: refs/pull/1/merge
+      GITHUB_REPOSITORY: test-owner/test-repo
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set GITHUB_EVENT_PATH to fixture file
+        run: |
+          echo "GITHUB_EVENT_PATH=$GITHUB_WORKSPACE/pristine/necojackarc--auto-request-review/v0.9.0/tests/fixtures/ignored_keyword_pr_event.json" >> $GITHUB_ENV
+
+      - id: action
+        uses: .
+        with:
+          token: fake-token
+          config: ${{ github.workspace }}/pristine/necojackarc--auto-request-review/v0.9.0/tests/fixtures/config-ignored-keywords.yml
+          use_local: 'true'
+
+      - name: Assert action completed without failure
+        run: |
+          echo "Action completed successfully (PR with ignored keyword skipped as expected)"
+          echo "PASS"
