@@ -1,0 +1,21 @@
+name: Test use_local with missing config (graceful termination)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Ensure config file does not exist
+        run: |
+          # Make sure the default config path does not exist
+          rm -f .github/auto_request_review.yml
+          echo "Config file removed (or was already absent)"
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          use_local: 'true'
+      - name: Assert action terminated gracefully
+        run: |
+          echo "PASS: action exited 0 (no local config found, terminated gracefully)"

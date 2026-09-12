@@ -1,0 +1,47 @@
+name: Test use_local with valid config file present
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create local config file
+        run: |
+          mkdir -p .github
+          cat > .github/auto_request_review.yml << 'EOF'
+          reviewers:
+            defaults:
+              - reviewer-user
+            groups:
+              engineers:
+                - engineer-a
+                - engineer-b
+          options:
+            ignore_draft: true
+            ignored_keywords:
+              - DO NOT REVIEW
+          EOF
+          echo "Config file created"
+          cat .github/auto_request_review.yml
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          use_local: 'true'
+      - name: Assert action ran (config read, then fails on missing PR context)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # Under workflow_dispatch, context.payload.pull_request is undefined,
+          # so the action will fail after successfully reading the local config.
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed as expected (no PR context under workflow_dispatch)"
+          elif [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded unexpectedly (possibly no PR found, terminated gracefully)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

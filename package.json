@@ -1,0 +1,35 @@
+{
+  "name": "auto-request-review",
+  "version": "0.14.0",
+  "description": "GitHub Action that automatically requests review of a pull request based on files changed",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.js",
+    "lint": "eslint src test",
+    "test": "NODE_ENV=automated-testing nyc --all mocha test",
+    "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info"
+  },
+  "keywords": [],
+  "author": "Taka <necojackarc@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^8.0.1",
+    "lodash": "^4.18.1",
+    "minimatch": "^3.1.5",
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.45.0",
+    "chai": "^4.3.6",
+    "eslint": "^8.9.0",
+    "mocha": "^12.0.1",
+    "nyc": "^18.0.0",
+    "sinon": "^13.0.1"
+  },
+  "nyc": {
+    "include": [
+      "src"
+    ]
+  }
+}
