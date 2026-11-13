@@ -4,8 +4,13 @@
   "version": "v0.14.0",
   "commit_sha": "9a4b11888f2d60c79120c5413f13eb63febc2b68",
   "url": "https://github.com/necojackarc/auto-request-review",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/necojackarc/auto-request-review/v0.14.0/sha256-ace976c2efd86231fe23262da08ab8fdc1b3db5a9f2f628d832419a6c23853a3.tar.gz",
+    "sha256": "ace976c2efd86231fe23262da08ab8fdc1b3db5a9f2f628d832419a6c23853a3",
+    "size_bytes": 406630
+  }
 }
